@@ -1,0 +1,1 @@
+# Ego-planner for IntelligentUAVChampionship

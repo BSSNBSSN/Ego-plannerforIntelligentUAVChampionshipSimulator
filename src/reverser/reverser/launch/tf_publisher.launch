@@ -1,0 +1,5 @@
+<launch>
+
+  <node pkg="tf" type="static_transform_publisher" name="world_ned_to_reversed_world_static" args="0 0 0 0 0 0 world_ned reversed_world 100"/>
+
+</launch>

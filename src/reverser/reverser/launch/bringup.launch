@@ -1,0 +1,9 @@
+<launch>
+
+  <include file="$(find reverser)/launch/tf_publisher.launch"/>
+
+  <node name="odom_reverse" pkg="reverser" type="odom_reverse" />
+
+  <node name="cmd_reverse" pkg="reverser" type="cmd_reverse" />
+
+</launch>
