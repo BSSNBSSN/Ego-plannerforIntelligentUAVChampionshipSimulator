@@ -14,6 +14,8 @@ cd Ego-plannerforIntelligentUAVChampionshipSimulator
 catkin build
 
 echo "source $(Your catkin_ws path)/Ego-plannerforIntelligentUAVChampionshipSimulator/devel/setup.bash" >> ~/.bashrc
+
+source ~/.bashrc
 ```
 
 在三个终端中分别启动
