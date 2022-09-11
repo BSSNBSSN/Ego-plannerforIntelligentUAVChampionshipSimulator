@@ -12,17 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
   quadrotor_msgs
   airsim_ros_pkgs
-)
-
-generate_messages(
-    DEPENDENCIES
-    std_msgs
-    geometry_msgs
-    nav_msgs
-)
-
-catkin_package(
-  CATKIN_DEPENDS message_runtime
+  cv_bridge
+  image_transport
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS})

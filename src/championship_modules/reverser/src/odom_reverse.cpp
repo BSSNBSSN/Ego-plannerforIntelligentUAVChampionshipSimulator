@@ -12,9 +12,9 @@ class SubPuber
 private:
 
   ros::NodeHandle nodeHandle;
-  // Initial odom
+  // Initial odom from airsim
   ros::Subscriber airsimOdomSub;
-  // Reversed odom
+  // Reversed odom for ego-planner
   ros::Publisher reversedOdomPub;
 
 public:

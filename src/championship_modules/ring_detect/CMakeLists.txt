@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(ring_detect)
 
+find_package(OpenCV)
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
@@ -16,11 +18,18 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
 )
 
-find_package(OpenCV)
+catkin_package(
+)
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
+)
 
 add_executable(ring_detect src/ring_detect.cpp)
 
-target_link_libraries(ring_detect ${catkin_LIBRARIES})
-target_link_libraries(ring_detect ${OpenCV_LIBS})
+target_link_libraries(ring_detect
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+)

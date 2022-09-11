@@ -24,9 +24,9 @@ private:
   // ros::Publisher reversedOdomPub;
 
   ros::NodeHandle nodeHandle;
-  // Initial odom
+  // Initial cmd from ego-planner
   ros::Subscriber egoCmdSub;
-  // Reversed odom
+  // Reversed cmd for airsim
   ros::Publisher reversedCmdPub;
 
 public:

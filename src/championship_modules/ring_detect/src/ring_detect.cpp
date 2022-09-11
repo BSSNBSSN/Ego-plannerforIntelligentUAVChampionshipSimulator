@@ -11,9 +11,9 @@ class SubPuber
 private:
 
   ros::NodeHandle nodeHandle;
-  // Initial odom
+  // Image from airsim front RGB camera
   ros::Subscriber imgSub;
-  // Reversed odom
+  // Detected ring position
   ros::Publisher ringPositionPub;
 
 public:
@@ -28,13 +28,17 @@ public:
     cv::Mat image;
     try
     {
-        image = cv_bridge::toCvShare(frontRGBImg, "bgr8")->image;
+      image = cv_bridge::toCvShare(frontRGBImg, "bgr8")->image;
     }
     catch (cv_bridge::Exception& e)
     {
-        ROS_ERROR("Could not convert to image!");
-        return;
+      ROS_ERROR("Could not convert to image!");
+      return;
     }
+    cv::imshow("",image);
+    cv::waitKey(500);
+    std::cout << "Image recieved" << std::endl;
+    cv::destroyWindow("");
   }
 };
 
