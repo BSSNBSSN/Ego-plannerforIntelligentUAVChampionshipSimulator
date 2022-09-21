@@ -59,6 +59,5 @@ int main(int argc, char **argv)
   SubPuber cmdReverse;
 
   ros::spin();
-
   return 0;
 }
