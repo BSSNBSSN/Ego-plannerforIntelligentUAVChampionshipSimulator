@@ -35,18 +35,13 @@ private:
     Mat element = getStructuringElement(MORPH_RECT,
                                                 Size(2*ELEMENT_SIZE + 1, 2*ELEMENT_SIZE + 1),
                                                 Point(ELEMENT_SIZE, ELEMENT_SIZE));
-    imshow("dst0", dst);
     erode(dst, dst, element);  //腐蚀
     dilate(dst, dst, element);  //膨胀
 
-    // imshow("test0", dst);
-    // waitKey(9999);
-    imshow("rawimage", rawimage);
-    imshow("dst", dst);
     return dst;
   }
 
-  void PNP(const Mat image) {
+  Mat PNP(const Mat image) {
 
 
     Mat contourImage;
@@ -74,10 +69,7 @@ private:
     for (int i = 0; i < 4; i++) {
         line(contourImage, vertices[i], vertices[(i+1)%4], Scalar(255,255,255), 2);
     }
-
-    imshow("test0", contourImage);
-    imshow("test1", image);
-    waitKey(9999);
+    return contourImage;
   }
 
 public:
@@ -102,8 +94,9 @@ public:
     }
 
     image = ImgProcess(image);
-    PNP(image);
+    image = PNP(image);
 
+    cvtColor(image, image, CV_GRAY2RGB);
     sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
     ringDstFramePub.publish(*msg);
   }
