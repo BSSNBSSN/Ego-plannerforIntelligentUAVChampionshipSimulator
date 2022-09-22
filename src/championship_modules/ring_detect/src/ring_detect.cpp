@@ -67,9 +67,40 @@ private:
     Point2f vertices[4];
     rRect.points(vertices);
     for (int i = 0; i < 4; i++) {
-        line(contourImage, vertices[i], vertices[(i+1)%4], Scalar(255,255,255), 2);
+        line(contourImage, vertices[i], vertices[(i+1)%4], Scalar(255), 2);
     }
-    return contourImage;
+    // Mat dst(contourImage.size(), CV_8UC3);
+    Mat dst;
+    cvtColor(contourImage, dst, CV_GRAY2RGB);
+    const Mat cameraMatrix = (Mat_<double>(3, 3) << 268.5118713378906, 0.0, 320.0,
+                                                    0.0, 268.5118713378906, 240.0,
+                                                    0.0, 0.0, 1.0);
+    const Mat distCoeffs = (Mat_<double>(5, 1) << 0, 0, 0, 0, 0);
+    vector<Point3f> objectPoints;
+    objectPoints.push_back({-0.5, 0.5, 0});
+    objectPoints.push_back({0.5, 0.5, 0});
+    objectPoints.push_back({0.5, -0.5, 0});
+    objectPoints.push_back({-0.5, -0.5, 0});
+
+    vector<Point2f> imagePoints;
+    for(int i = 0; i < 4; i++) {
+      imagePoints.push_back(vertices[i]);
+    }
+
+    Mat rvec, tvec;
+    solvePnP(
+      objectPoints,    // object points, Nx3 1-channel or 1xN/Nx1 3-channel, N is the number of points. vector<Point3d> can be also passed
+      imagePoints,    // corresponding image points, Nx2 1-channel or 1xN/Nx1 2-channel, N is the number of points. vector<Point2d> can be also passed
+      cameraMatrix,    // camera intrinsic matrix
+      distCoeffs,    // distortion coefficients
+      rvec,    // rotation vector
+      tvec    // translation vector
+      // false,    // used for SOLVEPNP_ITERATIVE. If true, use the provided rvec and tvec as initial approximations, and further optimize them.
+      // SOLVEPNP_IPPE // solving method
+    );
+    drawFrameAxes(dst, cameraMatrix, distCoeffs, rvec, tvec, 2);
+
+    return dst;
   }
 
 public:
@@ -96,7 +127,6 @@ public:
     image = ImgProcess(image);
     image = PNP(image);
 
-    cvtColor(image, image, CV_GRAY2RGB);
     sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
     ringDstFramePub.publish(*msg);
   }
