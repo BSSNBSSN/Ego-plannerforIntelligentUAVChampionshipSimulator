@@ -6,7 +6,7 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
-#define ELEMENT_SIZE 2
+#define ELEMENT_SIZE 1
 
 using namespace std;
 using namespace cv;
@@ -19,7 +19,7 @@ private:
   // Image from airsim front RGB camera
   ros::Subscriber imgSub;
   // Detected ring image
-  ros::Publisher ringFramePub;
+  ros::Publisher ringDstFramePub;
   // Detected ring position
   ros::Publisher ringPositionPub;
 
@@ -31,23 +31,60 @@ private:
     grayImage = 1.5 * channels.at(2) - 0.4 * channels.at(1) - 1.10 * channels.at(0);
 
     Mat dst;
-    threshold(grayImage, dst, 170, 255, THRESH_BINARY);
+    threshold(grayImage, dst, 150, 255, THRESH_BINARY);
     Mat element = getStructuringElement(MORPH_RECT,
                                                 Size(2*ELEMENT_SIZE + 1, 2*ELEMENT_SIZE + 1),
                                                 Point(ELEMENT_SIZE, ELEMENT_SIZE));
+    imshow("dst0", dst);
     erode(dst, dst, element);  //腐蚀
     dilate(dst, dst, element);  //膨胀
 
     // imshow("test0", dst);
     // waitKey(9999);
+    imshow("rawimage", rawimage);
+    imshow("dst", dst);
     return dst;
   }
 
+  void PNP(const Mat image) {
+
+
+    Mat contourImage;
+    image.copyTo(contourImage);
+
+    // 轮廓发现与绘制
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+    findContours(contourImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE, Point());
+
+    int contourIndex = 0;
+    for(int i = 1; i < contours.size(); i++) {
+      if(contourArea(contours[i]) > contourArea(contours[contourIndex])) {
+        contourIndex = i;
+      }
+       
+      //绘制轮廓
+      drawContours(contourImage,contours,i,Scalar(255),1,8,hierarchy);
+    }
+
+    RotatedRect rRect = minAreaRect(contours[contourIndex]);
+
+    Point2f vertices[4];
+    rRect.points(vertices);
+    for (int i = 0; i < 4; i++) {
+        line(contourImage, vertices[i], vertices[(i+1)%4], Scalar(255,255,255), 2);
+    }
+
+    imshow("test0", contourImage);
+    imshow("test1", image);
+    waitKey(9999);
+  }
 
 public:
 
   SubPuber(){
     imgSub = nodeHandle.subscribe("/airsim_node/drone_1/front_center/Scene", 1, &SubPuber::RingDetectCallback, this);
+    ringDstFramePub = nodeHandle.advertise<sensor_msgs::Image>("/ring_dst_frame", 1);
     ringPositionPub = nodeHandle.advertise<geometry_msgs::PoseStamped>("/ring_position", 1);
   }
 
@@ -65,9 +102,10 @@ public:
     }
 
     image = ImgProcess(image);
+    PNP(image);
 
     sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
-    ringFramePub.publish(*msg);
+    ringDstFramePub.publish(*msg);
   }
 };
 
@@ -78,7 +116,6 @@ int main(int argc, char **argv)
 
   //Create an object of class SubscribeAndPublish that will take care of everything
   SubPuber ringDetect;
-
   ros::spin();
 
   return 0;
