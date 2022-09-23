@@ -27,7 +27,7 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
 
-add_executable(ring_detect src/ring_detect.cpp)
+add_executable(ring_detect src/ring_detect.cpp src/bringup.cpp)
 
 target_link_libraries(ring_detect
   ${catkin_LIBRARIES}
