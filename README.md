@@ -40,8 +40,8 @@ TODO：
 
 - [x] 在模拟器中跑通ego-planner，对齐模拟器和ego-planner的坐标系
 - [x] 使egoego-planner正确处理/move_base_simple/goal的z轴信息
-- [ ] 识别障碍环
-- [ ] 确定障碍环三维坐标
+- [x] 识别障碍环
+- [x] 确定障碍环三维坐标
 - [ ] 自动穿越障碍环
 - [ ] 全流程自主穿越
 - [ ] 穿越动态障碍环
